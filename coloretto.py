@@ -38,10 +38,13 @@ class Coloretto:
             self.isfin=True
         def action(self,game):
             if self.isbot:
-                if random.random()>0.1:
-                    self.take_stockcard(game)
+                if any(game.rowcards):
+                    if random.random()>0.1:
+                        self.take_stockcard(game)
+                    else:
+                        self.take_rowcard_fin()
                 else:
-                    self.take_rowcard_fin()
+                    self.take_stockcard(game)
             else:
                 if input("t(take) or f(fin)? : ")=="t":
                     self.take_stockcard(game)
@@ -70,7 +73,7 @@ class Coloretto:
 
     def play(self):
         self.rowcards=[[] for i in range(3)]
-        while self.stock:
+        while True:
             if all(p.isfin for p in self.players):
                 print("ラウンド終了")
                 #HACK:再確保よりclearがいい?
@@ -81,6 +84,8 @@ class Coloretto:
             for i,p in enumerate(self.players):
                 if p.isfin:
                     continue
+                if not self.stock:
+                    return
                 print(i,"の番")
                 p.action(self)
                 print("列カード",self.rowcards)
