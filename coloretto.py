@@ -50,7 +50,15 @@ class Coloretto:
                     self.take_stockcard(game)
                 else:
                     self.take_rowcard_fin()
+        def calc_score(self):
+            scorechart=lambda x:21 if x>=6 else [0,1,3,6,10,15][x]
 
+            #TODO:もっと綺麗に
+            plus_cards_and_num=sorted(((h,self.hand.count(h)) for h in set(self.hand)),key=lambda x:x[1])[-3:]
+            score=sum(scorechart(pc) for _,pc in plus_cards_and_num)
+            minus_cards=set(self.hand)-set(i for i,_ in plus_cards_and_num)
+            score-=sum(scorechart(self.hand.count(h)) for h in minus_cards)
+            return score
 
     def __init__(self):
         self.stock=list(itertools.chain.from_iterable([i]*9 for i in range(7-2)))
@@ -84,6 +92,8 @@ class Coloretto:
                 if p.isfin:
                     continue
                 if not self.stock:
+                    for i,p in enumerate(self.players):
+                        print(i,"の得点",p.calc_score())
                     return
                 print(i,"の番")
                 p.action(self)
