@@ -1,5 +1,6 @@
 import random
 import itertools
+import operator
 class Coloretto:
     class Player:
         def __init__(self,isbot=False):
@@ -54,7 +55,7 @@ class Coloretto:
             scorechart=lambda x:21 if x>=6 else [0,1,3,6,10,15][x]
 
             #TODO:もっと綺麗に
-            plus_cards_and_num=sorted(((h,self.hand.count(h)) for h in set(self.hand)),key=lambda x:x[1])[-3:]
+            plus_cards_and_num=sorted(((h,self.hand.count(h)) for h in set(self.hand)),key=operator.itemgetter(1))[-3:]
             score=sum(scorechart(pc) for _,pc in plus_cards_and_num)
             minus_cards=set(self.hand)-set(i for i,_ in plus_cards_and_num)
             score-=sum(scorechart(self.hand.count(h)) for h in minus_cards)
@@ -98,7 +99,8 @@ class Coloretto:
                 print(i,"の番")
                 p.action(self)
                 print("列カード",self.rowcards)
-                p.print_hand()
+                for p2 in self.players:
+                    p2.print_hand()
                 print()
 
 game=Coloretto()
