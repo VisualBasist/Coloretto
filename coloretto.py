@@ -6,6 +6,8 @@ class Coloretto:
             self.hand=[]
             self.isbot=isbot
             self.isfin=False
+        def print_hand(self):
+            print(" ".join(Coloretto.colorize(c) for c in sorted(self.hand)))
         def take_firstcard(self,stock,selected_first_cards):
             self.hand=random.sample(set(stock)-selected_first_cards,2)
             selected_first_cards.update(self.hand)
@@ -20,7 +22,7 @@ class Coloretto:
                 return
 
             takencard=game.stock.pop()
-            print("取ったカード",takencard)
+            print("取ったカード",Coloretto.colorize(takencard))
             if self.isbot:
                 put_position=random.choices([i for i,(r,m) in enumerate(zip(game.rowcards,game.rowcards_max)) if len(r)<m])[0]
             else:
@@ -62,10 +64,15 @@ class Coloretto:
         self.rowcards_max=[1,2,3]
         print("列カード最大",self.rowcards_max)
 
+    @classmethod
+    def colorize(cls,n):
+        return "\033[30m"+"\033[4"+str(n+1)+"m"+str(n)+"\033[0m"
+
     def play(self):
         self.rowcards=[[] for i in range(3)]
         while self.stock:
             if all(p.isfin for p in self.players):
+                print("ラウンド終了")
                 #HACK:再確保よりclearがいい?
                 self.rowcards=[[] for i in range(3)]
                 #HACK:変更する時はリスト内包表記で書く?
@@ -77,7 +84,7 @@ class Coloretto:
                 print(i,"の番")
                 p.action(self)
                 print("列カード",self.rowcards)
-                print("手札",p.hand)
+                p.print_hand()
                 print()
 
 game=Coloretto()
