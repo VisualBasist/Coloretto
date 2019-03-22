@@ -16,7 +16,7 @@ class Coloretto:
         def take_stockcard(self,game):
             #stockを引数で渡さなくていいようにするのがいい気がする
             #Colorettoを継承してPlayer作る?
-            if all(len(r)>=m for r,m in zip(game.rowcards,game.rowcards_max)):
+            if all(len(r)>=m for r,m in zip(game.rowcards,game.rowcards_max) if r is not None):
                 print("もう取るしかありません")
                 self.take_rowcard_fin()
                 return
@@ -24,7 +24,7 @@ class Coloretto:
             takencard=game.stock.pop()
             print("取ったカード",Coloretto.colorize(takencard))
             if self.isbot:
-                put_position=random.choices([i for i,(r,m) in enumerate(zip(game.rowcards,game.rowcards_max)) if len(r)<m])[0]
+                put_position=random.choices([i for i,(r,m) in enumerate(zip(game.rowcards,game.rowcards_max)) if (r is not None) and len(r)<m])[0]
             else:
                 put_position=int(input("どこに置く? : "))-1
             game.rowcards[put_position].append(takencard)
@@ -34,7 +34,7 @@ class Coloretto:
             else:
                 put_position=int(input("どれを取る? : "))-1
             self.hand.extend(game.rowcards[put_position])
-            game.rowcards[put_position].clear()
+            game.rowcards[put_position]=None
             self.isfin=True
         def action(self,game):
             if self.isbot:
@@ -76,7 +76,6 @@ class Coloretto:
         while True:
             if all(p.isfin for p in self.players):
                 print("ラウンド終了")
-                #HACK:再確保よりclearがいい?
                 self.rowcards=[[] for i in range(3)]
                 #HACK:変更する時はリスト内包表記で書く?
                 for i,p in enumerate(self.players):
