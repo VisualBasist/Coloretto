@@ -14,6 +14,7 @@ class Coloretto:
             #stockを引数で渡さなくていいようにするのがいい気がする
             #Colorettoを継承してPlayer作る?
             if all(len(r)>=m for r,m in zip(game.rowcards,game.rowcards_max)):
+                print("もう取るしかありません")
                 self.take_rowcard_fin()
                 return
 
@@ -25,7 +26,12 @@ class Coloretto:
                 put_position=int(input("どこに置く? : "))-1
             game.rowcards[put_position].append(takencard)
         def take_rowcard_fin(self):
-            pass
+            if self.isbot:
+                put_position=random.choices([i for i,c in enumerate(game.rowcards) if c])[0]
+            else:
+                put_position=int(input("どれを取る? : "))-1
+            self.hand.extend(game.rowcards[put_position])
+            game.rowcards[put_position].clear()
         def action(self,game):
             if self.isbot:
                 if random.random()>0.1:
@@ -43,14 +49,13 @@ class Coloretto:
         self.stock=list(itertools.chain.from_iterable([i]*9 for i in range(7-2)))
         print(self.stock)
         self.players=[Coloretto.Player(),Coloretto.Player(True)]
-        print(self.players)
         selected_first_cards=set()
-        for p in self.players:
+        for i,p in enumerate(self.players):
             p.take_firstcard(self.stock,selected_first_cards)
-            print(p.hand)
-        print(self.stock)
+            print(i,"の手札",p.hand)
+        print("各自取った後の山札",self.stock)
         random.shuffle(self.stock)
-        print(self.stock)
+        print("シャッフルした山札",self.stock)
 
         self.rowcards_max=[1,2,3]
         print("列カード最大",self.rowcards_max)
@@ -58,9 +63,11 @@ class Coloretto:
     def play(self):
         self.rowcards=[[] for i in range(3)]
         while self.stock:
-            for p in self.players:
+            for i,p in enumerate(self.players):
+                print(i,"の番")
                 p.action(self)
                 print("列カード",self.rowcards)
+                print("手札",p.hand)
                 print()
 
 game=Coloretto()
