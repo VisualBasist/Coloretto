@@ -5,6 +5,7 @@ class Coloretto:
         def __init__(self,isbot=False):
             self.hand=[]
             self.isbot=isbot
+            self.isfin=False
         def take_firstcard(self,stock,selected_first_cards):
             self.hand=random.sample(set(stock)-selected_first_cards,2)
             selected_first_cards.update(self.hand)
@@ -32,6 +33,7 @@ class Coloretto:
                 put_position=int(input("どれを取る? : "))-1
             self.hand.extend(game.rowcards[put_position])
             game.rowcards[put_position].clear()
+            self.isfin=True
         def action(self,game):
             if self.isbot:
                 if random.random()>0.1:
@@ -39,7 +41,7 @@ class Coloretto:
                 else:
                     self.take_rowcard_fin()
             else:
-                if input("t(take) or f(fin) : ")=="t":
+                if input("t(take) or f(fin)? : ")=="t":
                     self.take_stockcard(game)
                 else:
                     self.take_rowcard_fin()
@@ -63,7 +65,15 @@ class Coloretto:
     def play(self):
         self.rowcards=[[] for i in range(3)]
         while self.stock:
+            if all(p.isfin for p in self.players):
+                #HACK:再確保よりclearがいい?
+                self.rowcards=[[] for i in range(3)]
+                #HACK:変更する時はリスト内包表記で書く?
+                for i,p in enumerate(self.players):
+                    self.players[i].isfin=False
             for i,p in enumerate(self.players):
+                if p.isfin:
+                    continue
                 print(i,"の番")
                 p.action(self)
                 print("列カード",self.rowcards)
