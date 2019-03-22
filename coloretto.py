@@ -46,10 +46,10 @@ class Coloretto:
                 else:
                     self.take_stockcard(game)
             else:
-                if input("t(take) or f(fin)? : ")=="t":
-                    self.take_stockcard(game)
-                else:
+                if input("t(take) or f(fin)? : ")=="f":
                     self.take_rowcard_fin()
+                else:
+                    self.take_stockcard(game)
         def calc_score(self):
             scorechart=lambda x:21 if x>=6 else [0,1,3,6,10,15][x]
 
